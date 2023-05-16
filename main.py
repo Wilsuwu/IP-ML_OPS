@@ -33,7 +33,7 @@ def peliculas_mes(mes: str) -> dict:
         return {"error": "El mes ingresado no es válido"}
 
     # Filtra las películas que se estrenaron en el mes especificado
-    peliculas_filtradas = peliculas[peliculas["relpeliculasease_date"].dt.month == pd.to_datetime(mes_en, format="%B").month]
+    peliculas_filtradas = peliculas[peliculas["release_date"].dt.month == pd.to_datetime(mes_en, format="%B").month]
 
     # Cuenta la cantidad de películas filtradas
     cantidad_peliculas = len(peliculas_filtradas)
