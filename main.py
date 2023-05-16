@@ -182,7 +182,7 @@ cosine_sim = cosine_similarity(tfidf_matrix, tfidf_matrix)
 indices = pd.Series(df.index, index=df['title']).drop_duplicates()
 
 
-@app.get('recomendacion/{titulo}')
+@app.get('/recomendacion/{titulo}')
 def recomendacion(titulo:str):
     idx = indices[titulo]
     sim_scores = list(enumerate(cosine_sim[idx]))
