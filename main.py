@@ -182,7 +182,7 @@ indices = pd.Series(df.index, index=df['title']).drop_duplicates()
 
 
 @app.get('recomendacion/{titulo}')
-def recommendacion(titulo):
+def recommendacion(titulo:str):
     idx = indices[titulo]
     sim_scores = list(enumerate(cosine_sim[idx]))
     sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
