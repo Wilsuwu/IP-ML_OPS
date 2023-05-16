@@ -189,4 +189,5 @@ def recomendacion(titulo:str):
     sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
     sim_scores = sim_scores[1:6]
     movie_indices = [i[0] for i in sim_scores]
-    return {'Lista recomendada': df[['title']].iloc[movie_indices]}
+    respuesta = list(df[['title']].iloc[movie_indices])
+    return {'Lista recomendada': respuesta}
