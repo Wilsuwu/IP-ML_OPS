@@ -178,7 +178,7 @@ tfidf_matrix = tfidf.fit_transform(df['overview'])
 
 cosine_sim = cosine_similarity(tfidf_matrix, tfidf_matrix)
 
-indices = pd.Series(df.index, index=df['titulo']).drop_duplicates()
+indices = pd.Series(df.index, index=df['title']).drop_duplicates()
 
 
 @app.get('recomendacion/{titulo}')
@@ -188,4 +188,4 @@ def recommendacion(titulo):
     sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
     sim_scores = sim_scores[1:6]
     movie_indices = [i[0] for i in sim_scores]
-    return {'Lista recomendada': df[['titulo']].iloc[movie_indices]}
+    return {'Lista recomendada': df[['title']].iloc[movie_indices]}
