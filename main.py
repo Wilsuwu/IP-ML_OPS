@@ -171,10 +171,11 @@ df = pd.read_csv('movies_ML_sample10.csv')
 tfidf = TfidfVectorizer(stop_words='english')
 
 #De quedar valores NaN, nos aseguramos de que no:
-df['overview'] = df['overview'].fillna('')
+df['processed_overview'] = df['processed_overview'].fillna('')
 
 #Transformamos la columna en una matriz de caracteristicas TF-IDF
-tfidf_matrix = tfidf.fit_transform(df['overview'])
+tfidf_matrix = tfidf.fit_transform(df['processed_overview'])
+
 
 cosine_sim = cosine_similarity(tfidf_matrix, tfidf_matrix)
 
@@ -182,7 +183,7 @@ indices = pd.Series(df.index, index=df['title']).drop_duplicates()
 
 
 @app.get('recomendacion/{titulo}')
-def recommendacion(titulo:str):
+def recomendacion(titulo:str):
     idx = indices[titulo]
     sim_scores = list(enumerate(cosine_sim[idx]))
     sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
