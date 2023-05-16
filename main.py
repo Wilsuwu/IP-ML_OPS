@@ -3,6 +3,8 @@ import pandas as pd
 import calendar
 from datetime import datetime
 import numpy as np
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
 
 
 
@@ -20,10 +22,10 @@ def peliculas_mes(mes: str) -> dict:
                   "diciembre":"December"}
 
     # Cargamos el archivo CSV
-    df = pd.read_csv('df_funciones.csv')
+    peliculas = pd.read_csv('df_funciones.csv')
 
     # Convierte la columna "release_date" a formato de fecha
-    df["release_date"] = pd.to_datetime(df["release_date"], errors="coerce")
+    peliculas["release_date"] = pd.to_datetime(peliculas["release_date"], errors="coerce")
 
     # Traduce el nombre de mes ingresado a su equivalente en inglés
     mes_en = meses_dict.get(mes.lower(), None)
@@ -31,7 +33,7 @@ def peliculas_mes(mes: str) -> dict:
         return {"error": "El mes ingresado no es válido"}
 
     # Filtra las películas que se estrenaron en el mes especificado
-    peliculas_filtradas = df[df["release_date"].dt.month == pd.to_datetime(mes_en, format="%B").month]
+    peliculas_filtradas = peliculas[peliculas["relpeliculasease_date"].dt.month == pd.to_datetime(mes_en, format="%B").month]
 
     # Cuenta la cantidad de películas filtradas
     cantidad_peliculas = len(peliculas_filtradas)
@@ -157,3 +159,34 @@ def retorno(pelicula:str):
 
     
     return {'pelicula':pelicula, 'inversion':inversion, 'ganacia':ganancia,'retorno':retorno, 'anio':año}
+
+
+
+
+# Sistema de recomendacion de peliculas
+
+df = pd.read_csv('movies_ML_sample10.csv')
+
+# Cremos un objeto de la clase tfidvectorizer y eliminamos las stopwords que no aportan valor al analisis
+tfidf = TfidfVectorizer(stop_words='english')
+
+#De quedar valores NaN, nos aseguramos de que no:
+df['overview'] = df['overview'].fillna('')
+
+#Transformamos la columna en una matriz de caracteristicas TF-IDF
+tfidf_matrix = tfidf.fit_transform(df['overview'])
+
+cosine_sim = cosine_similarity(tfidf_matrix, tfidf_matrix)
+
+indices = pd.Series(df.index, index=df['title']).drop_duplicates()
+
+
+
+@app.get('recomendacion/{titulo}')
+def recommendacion(title):
+    idx = indices[title]
+    sim_scores = list(enumerate(cosine_sim[idx]))
+    sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
+    sim_scores = sim_scores[1:6]
+    movie_indices = [i[0] for i in sim_scores]
+    return {'Lista recomendada': df[['title']].iloc[movie_indices]}
