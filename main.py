@@ -45,7 +45,7 @@ def peliculas_mes(mes: str) -> dict:
 
 
 
-@app.get('/peliculas_dis/{dis}')
+@app.get('/peliculas_dia/{dia}')
 def peliculas_dia(dia: str) -> dict:
     # Leer el dataset de películas
     peliculas = pd.read_csv('df_funciones.csv')
@@ -178,15 +178,14 @@ tfidf_matrix = tfidf.fit_transform(df['overview'])
 
 cosine_sim = cosine_similarity(tfidf_matrix, tfidf_matrix)
 
-indices = pd.Series(df.index, index=df['title']).drop_duplicates()
-
+indices = pd.Series(df.index, index=df['titulo']).drop_duplicates()
 
 
 @app.get('recomendacion/{titulo}')
-def recommendacion(title):
-    idx = indices[title]
+def recommendacion(titulo):
+    idx = indices[titulo]
     sim_scores = list(enumerate(cosine_sim[idx]))
     sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
     sim_scores = sim_scores[1:6]
     movie_indices = [i[0] for i in sim_scores]
-    return {'Lista recomendada': df[['title']].iloc[movie_indices]}
+    return {'Lista recomendada': df[['titulo']].iloc[movie_indices]}
